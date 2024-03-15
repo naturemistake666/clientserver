@@ -7,7 +7,7 @@ import com.example.clientservice.entity.Client;
 import com.example.clientservice.entity.Role;
 import com.example.clientservice.repository.ClientRepository;
 import com.example.clientservice.service.AuthenticationService;
-import com.example.clientservice.service.JwtService;
+import com.example.clientservice.service.JwtTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,7 +23,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final ClientRepository clientRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
+    private final JwtTokenService jwtTokenService;
     private final AuthenticationManager authenticationManager;
 
     @Override
@@ -36,7 +36,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .roles(Role.USER)
                 .build();
         clientRepository.save(client);
-        var jwtToken = jwtService.generateToken(client);
+        var jwtToken = jwtTokenService.generateToken(client);
         return AuthenticationResponse
                 .builder()
                 .token(jwtToken)
@@ -53,7 +53,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         );
         var client = clientRepository.findByEmail(request.getEmail())
                 .orElseThrow();
-        var jwtToken = jwtService.generateToken(client);
+        var jwtToken = jwtTokenService.generateToken(client);
         return AuthenticationResponse
                 .builder()
                 .token(jwtToken)
